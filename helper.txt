@@ -1,0 +1,18 @@
+http://localhost:8086/api/v2/write?org=influxdb&bucket=doc&precision=ns
+
+Token JK_JT-3a6T0pxnZaaVuvhTEkr6Np6lza1iSxXhIKVcndR8BdleV11k8dp2k6is-tm2ftq4acuns5oftaOPhucw==
+
+curl -X POST "http://localhost:8086/api/v2/write?org=influxdb&bucket=doc&precision=ns" \
+--header "Authorization: Token JK_JT-3a6T0pxnZaaVuvhTEkr6Np6lza1iSxXhIKVcndR8BdleV11k8dp2k6is-tm2ftq4acuns5oftaOPhucw==" \
+--data-binary 'timeseries_data value=42.5 1642752000000000000'
+
+curl -X GET "http://localhost:8086/api/v2/query?org=self&bucket=self" \
+--header "Authorization: Token JK_JT-3a6T0pxnZaaVuvhTEkr6Np6lza1iSxXhIKVcndR8BdleV11k8dp2k6is-tm2ftq4acuns5oftaOPhucw==" \
+--data-urlencode 'q=from(bucket: "self") |> range(start: -1h) |> filter(fn: (r) => r["_measurement"] == "timeseries_data")'
+
+curl -X POST "http://localhost:8086/api/v2/query?org=influxdb" \
+--header "Authorization: Token JK_JT-3a6T0pxnZaaVuvhTEkr6Np6lza1iSxXhIKVcndR8BdleV11k8dp2k6is-tm2ftq4acuns5oftaOPhucw==" \
+--header "Content-Type: application/vnd.flux" \
+--data 'from(bucket: "doc") |> range(start: -1h) |> filter(fn: (r) => r["_measurement"] == "timeseries_data")'
+
+jmeter -g C:/jmeter-results/influx_search_query400.csv -o C:/jmeter-results/INFLUX_DB_400_QUERY
